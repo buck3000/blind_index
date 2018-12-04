@@ -9,7 +9,7 @@ gemfile:
 addons:
   apt:
     packages:
-      - libsodium
+      - libsodium18
 before_install: gem install bundler
 script: bundle exec rake test
 notifications:
