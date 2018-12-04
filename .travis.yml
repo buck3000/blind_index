@@ -6,11 +6,7 @@ gemfile:
   - test/gemfiles/activerecord51.gemfile
   - test/gemfiles/activerecord50.gemfile
   - test/gemfiles/activerecord42.gemfile
-addons:
-  apt:
-    packages:
-      - libsodium18
-before_install: gem install bundler
+before_install: ./test/ci/before_install.sh
 script: bundle exec rake test
 notifications:
   email:
