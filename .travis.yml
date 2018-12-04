@@ -6,12 +6,16 @@ gemfile:
   - test/gemfiles/activerecord51.gemfile
   - test/gemfiles/activerecord50.gemfile
   - test/gemfiles/activerecord42.gemfile
-before_install: ./test/ci/before_install.sh
+env:
+  - LIBSODIUM_VERSION=1.0.16
+before_install:
+  - ./test/ci/install_libsodium.sh
+  - export LD_LIBRARY_PATH=$HOME/libsodium/$LIBSODIUM_VERSION/lib:$LD_LIBRARY_PATH
+cache:
+  directories:
+    - $HOME/libsodium/$LIBSODIUM_VERSION
 script: bundle exec rake test
 notifications:
   email:
     on_success: never
     on_failure: change
-cache:
-  directories:
-    - $HOME/libsodium
