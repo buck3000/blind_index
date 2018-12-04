@@ -136,6 +136,18 @@ class BlindIndexTest < Minitest::Test
     assert User.find_by(initials: "TU")
   end
 
+  def test_size
+    result = BlindIndex.generate_bidx("secret", key: random_key, size: 16, encode: false)
+    assert_equal 16, result.bytesize
+  end
+
+  def test_invalid_size
+    error = assert_raises(BlindIndex::Error) do
+      BlindIndex.generate_bidx("secret", key: random_key, size: 0, encode: false)
+    end
+    assert_equal "Size must be between 1 and 32", error.message
+  end
+
   def test_pbkdf2_sha384
     key = hex2bin("dcc130941b90e0d89ad32bab318535a49b551afb7e70f3033096736280720fa7")
     expected = hex2bin("7880eccb024cd0ca4d2b623c9b4a0d59ff5b29c8a56746bcafd2c0291f05e179")
@@ -151,6 +163,10 @@ class BlindIndexTest < Minitest::Test
   end
 
   private
+
+  def random_key
+    SecureRandom.random_bytes(32)
+  end
 
   def hex2bin(str)
     [str].pack("H*")

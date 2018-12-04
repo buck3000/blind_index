@@ -43,6 +43,10 @@ module BlindIndex
       # https://gist.github.com/ankane/fe3ac63fbf1c4550ee12554c664d2b8c
       cost_options = options[:cost]
 
+      # check size
+      size = (options[:size] || 32).to_i
+      raise BlindIndex::Error, "Size must be between 1 and 32" unless (1..32).include?(size)
+
       value = value.to_s
 
       value =
@@ -51,20 +55,23 @@ module BlindIndex
           n = cost_options[:n] || 4096
           r = cost_options[:r] || 8
           cp = cost_options[:p] || 1
-          SCrypt::Engine.scrypt(value, key, n, r, cp, 32)
+          SCrypt::Engine.scrypt(value, key, n, r, cp, size)
         when :argon2
           t = cost_options[:t] || 3
           m = cost_options[:m] || 12
+          raise BlindIndex::Error, "Size must be 32" unless size == 32
           [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
         when :pbkdf2_hmac
           iterations = cost_options[:iterations] || options[:iterations]
-          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, 32, "sha256")
+          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, size, "sha256")
         when :pbkdf2_sha384
           iterations = 50000
-          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, 32, "sha384")
+          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, size, "sha384")
         when :argon2id
           hashed_key = RbNaCl::Hash::Blake2b.digest(key, digest_size: 16)
-          pwhash = RbNaCl::PasswordHash::Argon2.new(4, 33554432, 32)
+          opslimit = cost_options[:opslimit] || 4
+          memlimit = cost_options[:memlimit] || 33554432
+          pwhash = RbNaCl::PasswordHash::Argon2.new(opslimit, memlimit, size)
           pwhash.digest(value, hashed_key, :argon2id)
         else
           raise BlindIndex::Error, "Unknown algorithm"

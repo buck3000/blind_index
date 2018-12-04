@@ -26,8 +26,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "attr_encrypted"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "sqlite3"
-  # spec.add_development_dependency "scrypt"
-  # spec.add_development_dependency "argon2"
+  spec.add_development_dependency "scrypt"
+  spec.add_development_dependency "argon2"
   spec.add_development_dependency "rbnacl"
   spec.add_development_dependency "benchmark-ips"
 end
