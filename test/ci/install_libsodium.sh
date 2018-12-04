@@ -7,7 +7,7 @@ if [ ! -d "$HOME/libsodium/$LIBSODIUM_VERSION" ]; then
   tar xvfz "libsodium-$LIBSODIUM_VERSION.tar.gz"
   cd "libsodium-$LIBSODIUM_VERSION"
   ./configure --prefix=$HOME/libsodium/$LIBSODIUM_VERSION
-  make && make check
+  make
   make install
 else
   echo "Libsodium cached"
