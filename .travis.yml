@@ -6,7 +6,10 @@ gemfile:
   - test/gemfiles/activerecord51.gemfile
   - test/gemfiles/activerecord50.gemfile
   - test/gemfiles/activerecord42.gemfile
-sudo: false
+addons:
+  apt:
+    packages:
+      - libsodium
 before_install: gem install bundler
 script: bundle exec rake test
 notifications:
