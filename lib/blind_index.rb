@@ -61,7 +61,7 @@ module BlindIndex
           m = cost_options[:m] || 12
           raise BlindIndex::Error, "Size must be 32" unless size == 32
           [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
-        when :pbkdf2_hmac
+        when :pbkdf2_sha256, :pbkdf2_hmac
           iterations = cost_options[:iterations] || options[:iterations]
           OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, size, "sha256")
         when :pbkdf2_sha384
