@@ -4,8 +4,9 @@ require "attr_encrypted"
 Bundler.require(:default)
 require "minitest/autorun"
 require "minitest/pride"
-require "scrypt"
-require "argon2"
+# require "scrypt"
+# require "argon2"
+require "rbnacl"
 
 ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
@@ -36,8 +37,8 @@ class User < ActiveRecord::Base
   attr_encrypted :last_name, key: SecureRandom.random_bytes(32)
 
   blind_index :email, key: SecureRandom.random_bytes(32)
-  blind_index :email_ci, algorithm: :scrypt, key: SecureRandom.random_bytes(32), attribute: :email, expression: ->(v) { v.try(:downcase) }
-  blind_index :email_binary, algorithm: :argon2, key: SecureRandom.random_bytes(32), attribute: :email, encode: false
+  blind_index :email_ci, algorithm: :pbkdf2_sha384, key: SecureRandom.random_bytes(32), attribute: :email, expression: ->(v) { v.try(:downcase) }
+  blind_index :email_binary, algorithm: :argon2id, key: SecureRandom.random_bytes(32), attribute: :email, encode: false
   blind_index :initials, key: SecureRandom.random_bytes(32)
 
   validates :email, uniqueness: true

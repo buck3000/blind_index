@@ -15,16 +15,15 @@ namespace :benchmark do
     require "securerandom"
     require "benchmark/ips"
     require "blind_index"
-    require "scrypt"
-    require "argon2"
+    require "rbnacl"
 
     key = SecureRandom.random_bytes(32)
     value = "secret"
 
     Benchmark.ips do |x|
       x.report("pbkdf2_hmac") { BlindIndex.generate_bidx(value, key: key, algorithm: :pbkdf2_hmac) }
-      x.report("scrypt") { BlindIndex.generate_bidx(value, key: key, algorithm: :scrypt) }
-      x.report("argon2") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2) }
+      x.report("pbkdf2_sha384") { BlindIndex.generate_bidx(value, key: key, algorithm: :pbkdf2_sha384) }
+      x.report("argon2id") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2id) }
     end
   end
 

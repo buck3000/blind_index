@@ -136,7 +136,25 @@ class BlindIndexTest < Minitest::Test
     assert User.find_by(initials: "TU")
   end
 
+  def test_pbkdf2_sha384
+    key = hex2bin("dcc130941b90e0d89ad32bab318535a49b551afb7e70f3033096736280720fa7")
+    expected = hex2bin("7880eccb024cd0ca4d2b623c9b4a0d59ff5b29c8a56746bcafd2c0291f05e179")
+    value = "secret"
+    assert_equal expected, BlindIndex.generate_bidx(value, key: key, algorithm: :pbkdf2_sha384, encode: false)
+  end
+
+  def test_argon2id
+    key = hex2bin("dcc130941b90e0d89ad32bab318535a49b551afb7e70f3033096736280720fa7")
+    expected = hex2bin("05c8a7e6c34059fb91e805340265807aaf3362478d6a6f1acd9031b7a5367782")
+    value = "secret"
+    assert_equal expected, BlindIndex.generate_bidx(value, key: key, algorithm: :argon2id, encode: false)
+  end
+
   private
+
+  def hex2bin(str)
+    [str].pack("H*")
+  end
 
   def create_user(email: "test@example.org", **attributes)
     User.create!({email: email}.merge(attributes))

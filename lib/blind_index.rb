@@ -1,5 +1,6 @@
 # dependencies
 require "active_support"
+require "openssl"
 
 # modules
 require "blind_index/model"
@@ -42,20 +43,29 @@ module BlindIndex
       # https://gist.github.com/ankane/fe3ac63fbf1c4550ee12554c664d2b8c
       cost_options = options[:cost]
 
+      value = value.to_s
+
       value =
         case algorithm
         when :scrypt
           n = cost_options[:n] || 4096
           r = cost_options[:r] || 8
           cp = cost_options[:p] || 1
-          SCrypt::Engine.scrypt(value.to_s, key, n, r, cp, 32)
+          SCrypt::Engine.scrypt(value, key, n, r, cp, 32)
         when :argon2
           t = cost_options[:t] || 3
           m = cost_options[:m] || 12
-          [Argon2::Engine.hash_argon2i(value.to_s, key, t, m)].pack("H*")
+          [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
         when :pbkdf2_hmac
           iterations = cost_options[:iterations] || options[:iterations]
-          OpenSSL::PKCS5.pbkdf2_hmac(value.to_s, key, iterations, 32, "sha256")
+          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, 32, "sha256")
+        when :pbkdf2_sha384
+          iterations = 50000
+          OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, 32, "sha384")
+        when :argon2id
+          hashed_key = RbNaCl::Hash::Blake2b.digest(key, digest_size: 16)
+          pwhash = RbNaCl::PasswordHash::Argon2.new(4, 33554432, 32)
+          pwhash.digest(value, hashed_key, :argon2id)
         else
           raise BlindIndex::Error, "Unknown algorithm"
         end
