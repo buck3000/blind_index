@@ -71,11 +71,21 @@ module BlindIndex
           # use same bounds as rbnacl
           raise BlindIndex::Error, "m must be between 3 and 22" if m < 3 || m > 22
 
-          # 32 byte digest size is limitation of argon2 gem
-          # this is no longer the case on master
-          # TODO add conditional check when next version of argon2 is released
+          # 32 byte digest size was limitation of argon2 gem before 2.0
+          # we could conditionally check, but argon2id is now recommended
           raise BlindIndex::Error, "Size must be 32" unless size == 32
           [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
+        when :argon2id
+          t = (cost_options[:t] || 3).to_i
+          # use same bounds as rbnacl
+          raise BlindIndex::Error, "t must be between 3 and 10" if t < 3 || t > 10
+
+          # m is memory in kibibytes (1024 bytes)
+          m = (cost_options[:m] || 12).to_i
+          # use same bounds as rbnacl
+          raise BlindIndex::Error, "m must be between 3 and 22" if m < 3 || m > 22
+
+          [Argon2::Engine.hash_argon2id(value, key, t, m, size)].pack("H*")
         when :pbkdf2_sha256
           iterations = cost_options[:iterations] || options[:iterations]
           OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, size, "sha256")

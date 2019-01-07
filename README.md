@@ -177,15 +177,21 @@ end
 
 > Changing this requires you to recompute the blind index.
 
-### Argon2
+### Argon2id
 
-Argon2 is the state-of-the-art algorithm and recommended for best security.
+Argon2id is the state-of-the-art algorithm and recommended for best security.
 
-To use it, add [argon2](https://github.com/technion/ruby-argon2) to your Gemfile and set:
+To use it, add [argon2](https://github.com/technion/ruby-argon2) to your Gemfile:
+
+```ruby
+gem 'argon2', '>= 2.0'
+```
+
+And set:
 
 ```ruby
 class User < ApplicationRecord
-  blind_index :email, algorithm: :argon2, ...
+  blind_index :email, algorithm: :argon2id, ...
 end
 ```
 
@@ -193,17 +199,15 @@ The default cost parameters are `{t: 3, m: 12}`. For highly sensitive fields, se
 
 ```ruby
 class User < ApplicationRecord
-  blind_index :email, algorithm: :argon2, cost: {t: 4, m: 15}, ...
+  blind_index :email, algorithm: :argon2id, cost: {t: 4, m: 15}, ...
 end
 ```
 
 > Changing this requires you to recompute the blind index.
 
-The variant used is Argon2i.
-
 ### Other
 
-scrypt is [also supported](docs/scrypt.md). Unless you have specific reasons to use it, go with Argon2 instead.
+Argon2i and scrypt is [also supported](docs/Other-Algorithms.md). Unless you have specific reasons to use it, go with Argon2id instead.
 
 ## Key Rotation
 

@@ -1,6 +1,7 @@
 ## 0.3.5 [unreleased]
 
 - Added support for hex keys
+- Added support for Argon2id
 
 ## 0.3.4
 
