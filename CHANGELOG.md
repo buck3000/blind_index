@@ -2,6 +2,7 @@
 
 - Added support for hex keys
 - Added support for Argon2id
+- Fixed querying with array values
 
 ## 0.3.4
 
