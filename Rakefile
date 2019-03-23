@@ -23,7 +23,9 @@ namespace :benchmark do
 
     Benchmark.ips do |x|
       x.report("pbkdf2_sha256") { BlindIndex.generate_bidx(value, key: key, algorithm: :pbkdf2_sha256) }
-      x.report("argon2") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2) }
+      x.report("argon2id") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2id) }
+      x.report("argon2id fast") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2id, fast: true) }
+      # x.report("argon2i") { BlindIndex.generate_bidx(value, key: key, algorithm: :argon2i) }
       # x.report("scrypt") { BlindIndex.generate_bidx(value, key: key, algorithm: :scrypt) }
     end
   end
