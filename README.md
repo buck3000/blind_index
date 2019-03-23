@@ -281,7 +281,7 @@ And add to your model
 ```ruby
 class User < ApplicationRecord
   blind_index :email, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"], legacy: true
-  blind_index :email_upgraded, attribute: :email, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"]
+  blind_index :email_upgraded, attribute: :email, bidx_attribute: :email_bidx, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"]
 end
 ```
 
