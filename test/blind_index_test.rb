@@ -60,7 +60,7 @@ class BlindIndexTest < Minitest::Test
   def test_encode
     user = create_user
     assert User.find_by(email_binary: "test@example.org")
-    assert_equal 32, user.encrypted_email_binary_bidx.bytesize
+    assert_equal 32, user.email_binary_bidx.bytesize
   end
 
   def test_validation
@@ -79,14 +79,14 @@ class BlindIndexTest < Minitest::Test
 
   def test_nil
     user = create_user(email: nil)
-    assert_nil user.encrypted_email_bidx
+    assert_nil user.email_bidx
     assert User.where(email: nil).first
     assert_nil User.where(email: "").first
   end
 
   def test_empty_string
     user = create_user(email: "")
-    assert user.encrypted_email_bidx
+    assert user.email_bidx
     assert User.where(email: "").first
     assert_nil User.where(email: nil).first
   end
@@ -95,13 +95,13 @@ class BlindIndexTest < Minitest::Test
     user = create_user
     user.email = nil
     user.save!
-    assert_nil user.encrypted_email_bidx
+    assert_nil user.email_bidx
     assert User.where(email: nil).first
   end
 
   def test_class_method
     user = create_user
-    assert_equal user.encrypted_email_bidx, User.compute_email_bidx("test@example.org")
+    assert_equal user.email_bidx, User.compute_email_bidx("test@example.org")
   end
 
   def test_secure_key
@@ -156,11 +156,11 @@ class BlindIndexTest < Minitest::Test
 
   def text_backfill
     create_user
-    User.update_all(encrypted_email_bidx: nil)
+    User.update_all(email_bidx: nil)
     user = User.last
-    assert_nil user.encrypted_email_bidx
+    assert_nil user.email_bidx
     user.compute_email_bidx
-    assert user.encrypted_email_bidx
+    assert user.email_bidx
   end
 
   private

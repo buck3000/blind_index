@@ -16,14 +16,14 @@ end
 ActiveRecord::Migration.create_table :users do |t|
   t.string :encrypted_email
   t.string :encrypted_email_iv
-  t.string :encrypted_email_bidx
-  t.string :encrypted_email_ci_bidx
-  t.binary :encrypted_email_binary_bidx
+  t.string :email_bidx
+  t.string :email_ci_bidx
+  t.binary :email_binary_bidx
   t.string :encrypted_first_name
   t.string :encrypted_first_name_iv
   t.string :encrypted_last_name
   t.string :encrypted_last_name_iv
-  t.string :encrypted_initials_bidx
+  t.string :initials_bidx
 end
 
 class User < ActiveRecord::Base
@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   blind_index :email, key: SecureRandom.random_bytes(32)
   blind_index :email_ci, algorithm: :scrypt, key: SecureRandom.random_bytes(32), attribute: :email, expression: ->(v) { v.try(:downcase) }
   blind_index :email_binary, algorithm: :argon2, key: SecureRandom.random_bytes(32), attribute: :email, encode: false
-  blind_index :initials, key: SecureRandom.hex(32), size: 16
+  blind_index :initials, key: SecureRandom.hex(32), algorithm: :argon2id, size: 16
 
   validates :email, uniqueness: true
   validates :email_ci, uniqueness: true
