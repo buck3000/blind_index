@@ -1,6 +1,6 @@
 module BlindIndex
   module Model
-    def blind_index(name, key: nil, iterations: nil, attribute: nil, expression: nil, bidx_attribute: nil, callback: true, algorithm: nil, insecure_key: nil, encode: nil, cost: nil, size: nil, legacy: false)
+    def blind_index(name, key: nil, iterations: nil, attribute: nil, expression: nil, bidx_attribute: nil, callback: true, algorithm: nil, insecure_key: nil, encode: nil, cost: nil, size: nil, legacy: false, fast: false)
       iterations ||= 10000
       attribute ||= name
       bidx_attribute ||= legacy ? :"encrypted_#{name}_bidx" : :"#{name}_bidx"
@@ -38,7 +38,8 @@ module BlindIndex
           encode: encode,
           cost: cost,
           size: size,
-          legacy: legacy
+          legacy: legacy,
+          fast: fast
         }.reject { |_, v| v.nil? }
 
         # should have been named generate_#{name}_bidx
