@@ -261,13 +261,15 @@ One alternative to blind indexing is to use a deterministic encryption scheme, l
 
 ### 1.0.0
 
-Keep existing fields with:
+For existing fields, add:
 
 ```ruby
 class User < ApplicationRecord
   blind_index :email, legacy: true, ...
 end
 ```
+
+#### Optional
 
 To rotate to new fields, add a new column without the `encrypted_` prefix:
 
