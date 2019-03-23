@@ -12,7 +12,6 @@ module BlindIndex
     attr_accessor :default_options
   end
   self.default_options = {
-    algorithm: :argon2id,
     encode: true,
     cost: {}
   }
@@ -24,7 +23,7 @@ module BlindIndex
     value = options[:expression].call(value) if options[:expression]
 
     unless value.nil?
-      algorithm = options[:algorithm].to_sym
+      algorithm = (options[:algorithm] || (options[:legacy] ? :pbkdf2_sha256 : :argon2id)).to_sym
       algorithm = :pbkdf2_sha256 if algorithm == :pbkdf2_hmac
       algorithm = :argon2i if algorithm == :argon2
 

@@ -263,12 +263,49 @@ One alternative to blind indexing is to use a deterministic encryption scheme, l
 
 Keep existing fields with:
 
+```ruby
+class User < ApplicationRecord
+  blind_index :email, legacy: true, ...
+end
+```
 
-To rotate to new fields, use:
+To rotate to new fields, add a new column without the `encrypted_` prefix:
 
 ```ruby
-
+add_column :users, :email_bidx, :string
+add_index :users, :email_bidx
 ```
+
+And add to your model
+
+```ruby
+class User < ApplicationRecord
+  blind_index :email, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"], legacy: true
+  blind_index :email_upgraded, attribute: :email, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"]
+end
+```
+
+Backfill the data
+
+```ruby
+User.find_each do |user|
+  user.compute_email_upgraded_bidx
+  user.save!
+end
+```
+
+Then update your model
+
+```ruby
+class User < ApplicationRecord
+  blind_index :email, key: ENV["USER_EMAIL_BLIND_INDEX_KEY"]
+
+  # remove this line after dropping column
+  self.ignored_columns = ["encrypted_email_bidx"]
+end
+```
+
+Finally, drop the old column.
 
 ### 0.3.0
 
