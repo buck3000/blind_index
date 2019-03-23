@@ -54,25 +54,6 @@ module BlindIndex
 
       value =
         case algorithm
-        when :scrypt
-          n = cost_options[:n] || 4096
-          r = cost_options[:r] || 8
-          cp = cost_options[:p] || 1
-          SCrypt::Engine.scrypt(value, key, n, r, cp, size)
-        when :argon2i
-          t = (cost_options[:t] || 3).to_i
-          # use same bounds as rbnacl
-          raise BlindIndex::Error, "t must be between 3 and 10" if t < 3 || t > 10
-
-          # m is memory in kibibytes (1024 bytes)
-          m = (cost_options[:m] || 12).to_i
-          # use same bounds as rbnacl
-          raise BlindIndex::Error, "m must be between 3 and 22" if m < 3 || m > 22
-
-          # 32 byte digest size was limitation of argon2 gem before 2.0
-          # we could conditionally check, but argon2id is now recommended
-          raise BlindIndex::Error, "Size must be 32" unless size == 32
-          [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
         when :argon2id
           t = (cost_options[:t] || (options[:fast] ? 3 : 4)).to_i
           # use same bounds as rbnacl
@@ -87,6 +68,25 @@ module BlindIndex
         when :pbkdf2_sha256
           iterations = cost_options[:iterations] || options[:iterations] || 10000
           OpenSSL::PKCS5.pbkdf2_hmac(value, key, iterations, size, "sha256")
+        when :argon2i
+          t = (cost_options[:t] || 3).to_i
+          # use same bounds as rbnacl
+          raise BlindIndex::Error, "t must be between 3 and 10" if t < 3 || t > 10
+
+          # m is memory in kibibytes (1024 bytes)
+          m = (cost_options[:m] || 12).to_i
+          # use same bounds as rbnacl
+          raise BlindIndex::Error, "m must be between 3 and 22" if m < 3 || m > 22
+
+          # 32 byte digest size was limitation of argon2 gem before 2.0
+          # we could conditionally check, but argon2id is now recommended
+          raise BlindIndex::Error, "Size must be 32" unless size == 32
+          [Argon2::Engine.hash_argon2i(value, key, t, m)].pack("H*")
+        when :scrypt
+          n = cost_options[:n] || 4096
+          r = cost_options[:r] || 8
+          cp = cost_options[:p] || 1
+          SCrypt::Engine.scrypt(value, key, n, r, cp, size)
         else
           raise BlindIndex::Error, "Unknown algorithm"
         end
