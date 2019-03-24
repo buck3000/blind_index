@@ -25,7 +25,7 @@ Here’s a [great article](https://blog.cryptographyengineering.com/2019/02/11/a
 Add this line to your application’s Gemfile:
 
 ```ruby
-gem 'argon2', '>= 2.0'
+gem 'argon2', '>= 2'
 gem 'blind_index'
 ```
 
@@ -182,7 +182,7 @@ This uses 3 iterations and 4 MB of memory.
 
 > Note: This requires you to recompute the blind index
 
-A number of other algorithms are [also supported](docs/Other-Algorithms.md). Unless you have specific reasons to use them, go with Argon2id instead.
+A number of other algorithms are [also supported](docs/Other-Algorithms.md). Unless you have specific reasons to use them, go with Argon2id.
 
 ## Key Rotation
 
